@@ -176,26 +176,39 @@ public class Extractor {
             WebElement divNombre = (new WebDriverWait(webDriver, 5)).until(
                     ExpectedConditions.presenceOfElementLocated(
                             By.cssSelector("div.mt4.display-flex.ember-view")));
-            
-            String nombre=divNombre.findElement(By.tagName("h1")).getText();
-            String cargo=divNombre.findElement(By.tagName("h2")).getText();
-            String pais=divNombre.findElement(By.tagName("h3")).getText();
-            System.out.println("||||||");
-            System.out.println(nombre);
-            System.out.println(cargo);
-            System.out.println(pais);
-            String descripcion = "";
+            String nombre="", cargo="", pais="",descripcion = "", url=""; 
             try{
                 descripcion=divNombre.findElement(By.cssSelector("p.pv-top-card-section__summary-text.mt4")).getText();
             }catch(Exception e){
-                System.out.println("Warning!!!");
+            }
+            try{
+                nombre=divNombre.findElement(By.tagName("h1")).getText();
+            }catch(Exception e){
+            }
+            try{
+                cargo=divNombre.findElement(By.tagName("h2")).getText();
+            }catch(Exception e){
+            }
+            try{
+                pais=divNombre.findElement(By.tagName("h3")).getText();
+            }catch(Exception e){
+            }
+            
+            try{
+                descripcion=divNombre.findElements(By.tagName("div")).get(4).getText();
+            }catch(Exception e){
+                System.out.println("WARNING!");
+                System.out.println(e.toString());
             }
             WebElement divUrl = (new WebDriverWait(webDriver, 5)).until(
                     ExpectedConditions.presenceOfElementLocated(
                             By.cssSelector("div.pv-top-card-section__photo-wrapper.pv-top-card-v2-section__photo-wrapper")));
             WebElement div2Url = divUrl.findElement(By.tagName("div"));
             WebElement div3Url = div2Url.findElement(By.tagName("div"));
-            String url = div3Url.getAttribute("style").replace("background-image: url(", "").replace("\"", "").replace("\"", "").replace(");", "");
+            try{
+                url = div3Url.getAttribute("style").replace("background-image: url(", "").replace("\"", "").replace("\"", "").replace(");", "");
+            }catch(Exception e){
+            }
             Perfil p = new Perfil();
             p.setCargoActual(cargo);
             p.setDescripcion(descripcion);
@@ -203,7 +216,10 @@ public class Extractor {
             p.setPais(pais);
             p.setPhoto(url);
             
-            
+            System.out.println("||||||");
+            System.out.println(nombre);
+            System.out.println(cargo);
+            System.out.println(pais);
             System.out.println(descripcion);
             System.out.println(url);
             
@@ -229,22 +245,22 @@ public class Extractor {
                 }catch(Exception e){
                 }
                 try{
-                    lugar= divTrabajo.findElements(By.tagName("h4")).get(0).getText();
+                    lugar= divTrabajo.findElements(By.tagName("h4")).get(0).getText().replace("Nombre de la empresa\\n", "");
                 }catch(Exception e){
                 }
                 try{
-                    fecha= divTrabajo.findElements(By.tagName("h4")).get(1).getText();
+                    fecha= divTrabajo.findElements(By.tagName("h4")).get(1).getText().replace("Fechas de empleo\n", "");
                 }catch(Exception e){
                 }
                 try{
-                    ubicacion= divTrabajo.findElements(By.tagName("h4")).get(2).getText();
+                    ubicacion= divTrabajo.findElements(By.tagName("h4")).get(3).getText().replace("Ubicación\n", "");
                 }catch(Exception e){
                 }
                 try{
-                    descripcion1= divTrabajo.findElements(By.tagName("h3")).get(3).getText();
+                    descripcion1= elemento.findElement(By.cssSelector("div.pv-entity__extra-details.ember-view")).getText().replace("Nombre de la empresa\n", "");
                 }catch(Exception e){
                 }
-                System.out.println("---------------");
+                System.out.println("11111111111111");
                 System.out.println(descripcion1);
                 System.out.println(fecha);
                 System.out.println(lugar);
@@ -261,6 +277,60 @@ public class Extractor {
                 
             }
             
+            
+            //Educaciones
+            ArrayList<Educacion> educaciones = new ArrayList<>();
+            
+            WebElement divSectionEdu = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("//*[@class='profile-detail']/div[4]")));
+            
+            //WebElement botonExpMas = divSectionExp.findElement(By.tagName("span")).findElement(By.tagName("section")).findElement(By.tagName("div")).findElement(By.tagName("section")).findElement(By.tagName("button"));
+            
+            WebElement listaEst = divSectionEdu.findElements(By.tagName("ul")).get(1);
+            
+            List<WebElement> elementosLista2 = listaEst.findElements(By.tagName("li"));
+            
+            for(WebElement elemento : elementosLista2){
+                List<WebElement> divTrabajos = elemento.findElement(By.tagName("a")).findElements(By.tagName("div"));
+                WebElement divTrabajo = divTrabajos.get(1);
+                String nombreLugar="", nombreCurso="", periodo="", actividades="", detallesExtra="";
+                try{
+                    nombreLugar= divTrabajo.findElement(By.tagName("h3")).getText();
+                }catch(Exception e){
+                }
+                try{
+                    nombreCurso= divTrabajo.findElements(By.tagName("div")).get(0).findElements(By.tagName("p")).get(0).findElements(By.tagName("span")).get(1).getText();
+                }catch(Exception e){
+                }
+                try{
+                    periodo= divTrabajo.findElement(By.cssSelector("p.pv-entity__dates")).findElements(By.tagName("span")).get(1).getText();
+                }catch(Exception e){
+                }
+                try{
+                    actividades= divTrabajo.findElements(By.tagName("p")).get(4).findElements(By.tagName("span")).get(1).getText();
+                }catch(Exception e){
+                }
+                try{
+                    detallesExtra= elemento.findElement(By.cssSelector("div.pv-entity__extra-details.ember-view")).getText();
+                }catch(Exception e){
+                }
+                System.out.println("22222222222");
+                System.out.println(nombreLugar);
+                System.out.println(nombreCurso);
+                System.out.println(periodo);
+                System.out.println(actividades);
+                System.out.println(detallesExtra);
+                Educacion edu = new Educacion();
+                edu.setActividades(actividades);
+                edu.setDetallesExtra(detallesExtra);
+                edu.setNombreCurso(nombreCurso);
+                edu.setNombreLugar(nombreLugar);
+                edu.setPeriodo(periodo);
+                
+                educaciones.add(edu);
+                
+            }
                        
             
             
@@ -475,6 +545,7 @@ public class Extractor {
             g.setLogros(logros);
             g.setPerfil(p);
             g.setExperiencia(experiencias);
+            g.setEducacion(educaciones);
             graduados.add(g);
             
             webDriver.close();
