@@ -12,7 +12,6 @@ package Aplicacion;
 public class Educacion {
     private String nombreLugar, nombreCurso, periodo, actividades, detallesExtra;
 
-
     public String getNombreLugar() {
         return nombreLugar;
     }
