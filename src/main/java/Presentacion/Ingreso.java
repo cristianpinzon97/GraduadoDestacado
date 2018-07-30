@@ -175,6 +175,8 @@ public class Ingreso extends javax.swing.JFrame {
         
         
         graduados = extractor.extraerPerfiles();
+        
+        MostrarInformacion inicio = new MostrarInformacion(graduados);
 
     }//GEN-LAST:event_entrarBuscarActionPerformed
 

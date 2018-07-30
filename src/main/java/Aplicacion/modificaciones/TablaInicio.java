@@ -31,11 +31,11 @@ public class TablaInicio {
 
     ArrayList<Graduado> graduados;
 
-    public void verTablaInicio(JTable tabla) {
+    public void verTablaInicio(JTable tabla,ArrayList<Graduado> g) {
 
         tabla.setDefaultRenderer(Object.class, new Render());
 
-        graduados = new Extractor().extraerPerfiles();
+        graduados = g;
 
         Object[][] tablaGraduados = new Object[graduados.size()][9];
 

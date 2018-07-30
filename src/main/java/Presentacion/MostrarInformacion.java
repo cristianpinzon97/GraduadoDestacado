@@ -5,7 +5,9 @@
  */
 package Presentacion;
 
+import Aplicacion.Graduado;
 import Aplicacion.modificaciones.TablaInicio;
+import java.util.ArrayList;
 import javax.swing.JButton;
 
 /**
@@ -17,13 +19,13 @@ public class MostrarInformacion extends javax.swing.JFrame {
     /**
      * Creates new form MostrarInformacion
      */
-    
+    ArrayList<Graduado> graduados;
     TablaInicio tablaIni = new TablaInicio();
     
-    public MostrarInformacion() {
+    public MostrarInformacion(ArrayList<Graduado> graduados) {
         initComponents();
-        
-        tablaIni.verTablaInicio(tablaInicio);
+        this.graduados=graduados;
+        tablaIni.verTablaInicio(tablaInicio,graduados);
     }
 
     /**
@@ -93,19 +95,19 @@ public class MostrarInformacion extends javax.swing.JFrame {
                 ((JButton)value).doClick();
                 JButton boton = (JButton) value;
                 if(column==5){
-                    Aptitudes aptitudesGui = new Aptitudes();
+                    Aptitudes aptitudesGui = new Aptitudes(graduados.get(row));
                     aptitudesGui.setVisible(true);
                 } 
                 if(column==6){
-                    Educacion educacionGui = new Educacion();
+                    Educacion educacionGui = new Educacion(graduados.get(row));
                     educacionGui.setVisible(true);
                 } 
                 if(column==7){
-                    Experiencia experienciaGui = new Experiencia();
+                    Experiencia experienciaGui = new Experiencia(graduados.get(row));
                     experienciaGui.setVisible(true);
                 } 
                 if(column==8){
-                    Logros logrosGui = new Logros();
+                    Logros logrosGui = new Logros(graduados.get(row));
                     logrosGui.setVisible(true);
                 } 
                 
@@ -148,11 +150,11 @@ public class MostrarInformacion extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MostrarInformacion().setVisible(true);
-            }
-        });
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new MostrarInformacion().setVisible(true);
+//            }
+//        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

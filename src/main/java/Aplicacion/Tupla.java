@@ -9,7 +9,8 @@ package Aplicacion;
  *
  * @author crist
  */
-class Tupla {
+public class Tupla {
+    
     private String nombre;
     private String cantidad;
 

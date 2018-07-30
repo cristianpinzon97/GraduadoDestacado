@@ -5,6 +5,7 @@
  */
 package Presentacion;
 
+import Aplicacion.Graduado;
 import Aplicacion.modificaciones.TablaEducacion;
 
 /**
@@ -19,9 +20,9 @@ public class Educacion extends javax.swing.JFrame {
     
     TablaEducacion tablaEdu = new TablaEducacion();
     
-    public Educacion() {
+    public Educacion(Graduado graduado) {
         initComponents();
-        tablaEdu.verTablaEducacion(educacion);
+        tablaEdu.verTablaEducacion(educacion,graduado.getEducacion());
     }
 
     /**
@@ -158,11 +159,11 @@ public class Educacion extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Educacion().setVisible(true);
-            }
-        });
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new Educacion().setVisible(true);
+//            }
+//        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

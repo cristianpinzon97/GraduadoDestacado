@@ -5,6 +5,7 @@
  */
 package Presentacion;
 
+import Aplicacion.Graduado;
 import Aplicacion.modificaciones.TablaExperiencia;
 
 /**
@@ -18,9 +19,9 @@ public class Experiencia extends javax.swing.JFrame {
      */
     
     TablaExperiencia tablaExp = new TablaExperiencia();
-    public Experiencia() {
+    public Experiencia(Graduado graduado) {
         initComponents();
-        tablaExp.verTablaExperiencia(experiencia);
+        tablaExp.verTablaExperiencia(experiencia,graduado.getExperiencia());
     }
 
     /**
@@ -159,11 +160,11 @@ public class Experiencia extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Experiencia().setVisible(true);
-            }
-        });
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new Experiencia().setVisible(true);
+//            }
+//        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

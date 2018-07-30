@@ -5,6 +5,7 @@
  */
 package Presentacion;
 
+import Aplicacion.Graduado;
 import Aplicacion.modificaciones.TablaAptitudes;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,17 +20,19 @@ public class Aptitudes extends javax.swing.JFrame {
     /**
      * Creates new form Aptitudes
      */
+    Graduado graduado;
     TablaAptitudes tablaApti = new TablaAptitudes();
     
     
     
-    public Aptitudes() {
+    public Aptitudes(Graduado graduado) {
         initComponents();
-        tablaApti.verTablaAptitudes(aptitudes);
-        tablaApti.verTablaAptitudes(conocimientoSector);
-        tablaApti.verTablaAptitudes(herramientas);
-        tablaApti.verTablaAptitudes(interpersonales);
-        tablaApti.verTablaAptitudes(otros);
+        this.graduado=graduado;
+        tablaApti.verTablaAptitudes(validaciones,graduado.getAptitud().getValidaciones());
+        tablaApti.verTablaAptitudes(conocimientoSector,graduado.getAptitud().getConocimientoSector());
+        tablaApti.verTablaAptitudes(herramientas,graduado.getAptitud().getHerramientas());
+        tablaApti.verTablaAptitudes(interpersonales,graduado.getAptitud().getInterpersonales());
+        tablaApti.verTablaAptitudes(otros,graduado.getAptitud().getOtros());
     }
 
     /**
@@ -47,7 +50,7 @@ public class Aptitudes extends javax.swing.JFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        aptitudes = new javax.swing.JTable();
+        validaciones = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         conocimientoSector = new javax.swing.JTable();
@@ -87,7 +90,7 @@ public class Aptitudes extends javax.swing.JFrame {
         nombreGraduado.setFont(new java.awt.Font("Perpetua", 1, 18)); // NOI18N
         nombreGraduado.setText("Nombre Graduado");
 
-        aptitudes.setModel(new javax.swing.table.DefaultTableModel(
+        validaciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -98,7 +101,7 @@ public class Aptitudes extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(aptitudes);
+        jScrollPane1.setViewportView(validaciones);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -295,15 +298,14 @@ public class Aptitudes extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Aptitudes().setVisible(true);
-            }
-        });
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new Aptitudes().setVisible(true);
+//            }
+//        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable aptitudes;
     private javax.swing.JTable conocimientoSector;
     private javax.swing.JTable herramientas;
     private javax.swing.JTable interpersonales;
@@ -324,5 +326,6 @@ public class Aptitudes extends javax.swing.JFrame {
     private javax.swing.JLabel nombreGraduado;
     private javax.swing.JTable otros;
     private javax.swing.JLabel photo;
+    private javax.swing.JTable validaciones;
     // End of variables declaration//GEN-END:variables
 }

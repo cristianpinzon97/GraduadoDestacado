@@ -14,8 +14,8 @@ import java.util.ArrayList;
 public class Graduado {
     private Perfil perfil;
     private Aptitud aptitud;
-    private Educacion educacion;
-    private Experiencia experiencia;
+    private ArrayList<Educacion> educacion;
+    private ArrayList<Experiencia> experiencia;
     private ArrayList<Logro> logros;
 
     public Perfil getPerfil() {
@@ -34,19 +34,19 @@ public class Graduado {
         this.aptitud = aptitud;
     }
 
-    public Educacion getEducacion() {
+    public ArrayList<Educacion> getEducacion() {
         return educacion;
     }
 
-    public void setEducacion(Educacion educacion) {
+    public void setEducacion(ArrayList<Educacion> educacion) {
         this.educacion = educacion;
     }
 
-    public Experiencia getExperiencia() {
+    public ArrayList<Experiencia> getExperiencia() {
         return experiencia;
     }
 
-    public void setExperiencia(Experiencia experiencia) {
+    public void setExperiencia(ArrayList<Experiencia> experiencia) {
         this.experiencia = experiencia;
     }
 

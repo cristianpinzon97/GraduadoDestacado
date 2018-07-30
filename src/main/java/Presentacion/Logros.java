@@ -5,6 +5,7 @@
  */
 package Presentacion;
 
+import Aplicacion.Graduado;
 import Aplicacion.Sublogro;
 import Aplicacion.modificaciones.TablaLogros;
 import Aplicacion.modificaciones.TablaSublogros;
@@ -19,14 +20,16 @@ public class Logros extends javax.swing.JFrame {
     /**
      * Creates new form Aptitudes
      */
+    Graduado graduado;
     TablaLogros tablaLog = new TablaLogros();
     TablaSublogros tablaSubLog = new TablaSublogros();
 
-    public Logros() {
+    public Logros(Graduado graduado) {
         initComponents();
+        this.graduado=graduado;
         subLogros.setVisible(false);
         subLogros.getTableHeader().setVisible(false);
-        tablaLog.verTablaLogros(logros);
+        tablaLog.verTablaLogros(logros,graduado.getLogros());
     }
 
     /**
@@ -167,7 +170,7 @@ public class Logros extends javax.swing.JFrame {
                 JButton boton = (JButton) value;
                 subLogros.setVisible(true);
                 subLogros.getTableHeader().setVisible(true);
-                tablaSubLog.verTablaSublogros(subLogros);
+                tablaSubLog.verTablaSublogros(subLogros,graduado.getLogros().get(row).getSublogros());
             }
         }
     }//GEN-LAST:event_logrosMouseClicked
@@ -203,11 +206,11 @@ public class Logros extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Logros().setVisible(true);
-            }
-        });
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new Logros().setVisible(true);
+//            }
+//        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

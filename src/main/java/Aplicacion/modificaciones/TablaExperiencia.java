@@ -5,6 +5,8 @@
  */
 package Aplicacion.modificaciones;
 
+import Aplicacion.Experiencia;
+import java.util.ArrayList;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -13,11 +15,19 @@ import javax.swing.table.DefaultTableModel;
  * @author crist
  */
 public class TablaExperiencia {
-    public void verTablaExperiencia(JTable tabla) {
+    public void verTablaExperiencia(JTable tabla,ArrayList<Experiencia> exp) {
 
         tabla.setDefaultRenderer(Object.class, new Render());
+        Object[][] experiencia = new Object[exp.size()][3];
+        
+        for (int i = 0; i < exp.size(); i++) {
+            experiencia[i][0]=exp.get(i).getNombre();
+            experiencia[i][1]=exp.get(i).getLugar();
+            experiencia[i][2]=exp.get(i).getDescripcion();
+            
+        }
         DefaultTableModel d = new DefaultTableModel(
-                new Object[][]{{"NOMBRE", "LUGAR","UBICACION","DESCRIPCION"}, {"NOMBRE", "LUGAR","UBICACION","DESCRIPCION"}, {"NOMBRE", "LUGAR","UBICACION","DESCRIPCION"}},
+                experiencia,
                 new Object[]{"NOMBRE", "LUGAR","UBICACION","DESCRIPCION"}
         ) {
             public boolean isCellEditable(int row, int column) {
