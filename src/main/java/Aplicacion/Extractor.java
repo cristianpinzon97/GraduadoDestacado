@@ -136,8 +136,10 @@ public class Extractor {
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_password-login']")));
             WebElement boton = (new WebDriverWait(webDriver, 5)).until(
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
-            email.sendKeys("cristian.pinzon@mail.escuelaing.edu.co");
-            password.sendKeys("Cr1030675544");
+            email.sendKeys("ricardo.pinto@mail.escuelaing.edu.co");
+            password.sendKeys("Insertiniciofin8");
+            //email.sendKeys("cristian.pinzon@mail.escuelaing.edu.co");
+            //password.sendKeys("Cr1030675544");
             boton.click();
         }
       
@@ -165,7 +167,7 @@ public class Extractor {
             //    webDriver.switchTo().window(winHandle);
             //}
             
-             JavascriptExecutor jsx = (JavascriptExecutor) webDriver;
+            JavascriptExecutor jsx = (JavascriptExecutor) webDriver;
             //This will scroll the web page till end.	
             for(int k=0;k<20;k++){
                 jsx.executeScript("window.scrollBy(0,200)");
@@ -178,10 +180,6 @@ public class Extractor {
                             By.cssSelector("div.mt4.display-flex.ember-view")));
             String nombre="", cargo="", pais="",descripcion = "", url=""; 
             try{
-                descripcion=divNombre.findElement(By.cssSelector("p.pv-top-card-section__summary-text.mt4")).getText();
-            }catch(Exception e){
-            }
-            try{
                 nombre=divNombre.findElement(By.tagName("h1")).getText();
             }catch(Exception e){
             }
@@ -193,12 +191,14 @@ public class Extractor {
                 pais=divNombre.findElement(By.tagName("h3")).getText();
             }catch(Exception e){
             }
-            
             try{
-                descripcion=divNombre.findElements(By.tagName("div")).get(4).getText();
+                WebElement prin = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.className("core-rail")));
+                WebElement divDescripcion = prin.findElements(By.tagName("div")).get(1);
+                WebElement botonMostrarMasDescripcion = divDescripcion.findElements(By.tagName("div")).get(13).findElement(By.tagName("button"));
+                jsx.executeScript("arguments[0].click();",botonMostrarMasDescripcion );
+                descripcion = divDescripcion.findElements(By.tagName("div")).get(13).findElement(By.tagName("p")).getText();
             }catch(Exception e){
-                System.out.println("WARNING!");
-                System.out.println(e.toString());
             }
             WebElement divUrl = (new WebDriverWait(webDriver, 5)).until(
                     ExpectedConditions.presenceOfElementLocated(
@@ -245,7 +245,7 @@ public class Extractor {
                 }catch(Exception e){
                 }
                 try{
-                    lugar= divTrabajo.findElements(By.tagName("h4")).get(0).getText().replace("Nombre de la empresa\\n", "");
+                    lugar= divTrabajo.findElements(By.tagName("h4")).get(0).getText().replace("Nombre de la empresa\n", "");
                 }catch(Exception e){
                 }
                 try{
@@ -261,11 +261,11 @@ public class Extractor {
                 }catch(Exception e){
                 }
                 System.out.println("11111111111111");
-                System.out.println(descripcion1);
-                System.out.println(fecha);
+            //    System.out.println(descripcion1);
+            //    System.out.println(fecha);
                 System.out.println(lugar);
-                System.out.println(nombre2);
-                System.out.println(ubicacion);
+            //    System.out.println(nombre2);
+            //    System.out.println(ubicacion);
                 Experiencia exp = new Experiencia();
                 exp.setDescripcion(descripcion1);
                 exp.setFecha(fecha);
@@ -280,59 +280,60 @@ public class Extractor {
             
             //Educaciones
             ArrayList<Educacion> educaciones = new ArrayList<>();
-            
-            WebElement divSectionEdu = (new WebDriverWait(webDriver, 5)).until(
-                    ExpectedConditions.presenceOfElementLocated(
-                            By.xpath("//*[@class='profile-detail']/div[4]")));
-            
-            //WebElement botonExpMas = divSectionExp.findElement(By.tagName("span")).findElement(By.tagName("section")).findElement(By.tagName("div")).findElement(By.tagName("section")).findElement(By.tagName("button"));
-            
-            WebElement listaEst = divSectionEdu.findElements(By.tagName("ul")).get(1);
-            
-            List<WebElement> elementosLista2 = listaEst.findElements(By.tagName("li"));
-            
-            for(WebElement elemento : elementosLista2){
-                List<WebElement> divTrabajos = elemento.findElement(By.tagName("a")).findElements(By.tagName("div"));
-                WebElement divTrabajo = divTrabajos.get(1);
-                String nombreLugar="", nombreCurso="", periodo="", actividades="", detallesExtra="";
-                try{
-                    nombreLugar= divTrabajo.findElement(By.tagName("h3")).getText();
-                }catch(Exception e){
+            try{
+                WebElement divSectionEdu = (new WebDriverWait(webDriver, 5)).until(
+                        ExpectedConditions.presenceOfElementLocated(
+                                By.xpath("//*[@class='profile-detail']/div[4]")));
+
+                //WebElement botonExpMas = divSectionExp.findElement(By.tagName("span")).findElement(By.tagName("section")).findElement(By.tagName("div")).findElement(By.tagName("section")).findElement(By.tagName("button"));
+
+                WebElement listaEst = divSectionEdu.findElements(By.tagName("ul")).get(1);
+
+                List<WebElement> elementosLista2 = listaEst.findElements(By.tagName("li"));
+
+                for(WebElement elemento : elementosLista2){
+                    List<WebElement> divTrabajos = elemento.findElement(By.tagName("a")).findElements(By.tagName("div"));
+                    WebElement divTrabajo = divTrabajos.get(1);
+                    String nombreLugar="", nombreCurso="", periodo="", actividades="", detallesExtra="";
+                    try{
+                        nombreLugar= divTrabajo.findElement(By.tagName("h3")).getText();
+                    }catch(Exception e){
+                    }
+                    try{
+                        nombreCurso= divTrabajo.findElements(By.tagName("div")).get(0).findElements(By.tagName("p")).get(0).findElements(By.tagName("span")).get(1).getText();
+                    }catch(Exception e){
+                    }
+                    try{
+                        periodo= divTrabajo.findElement(By.cssSelector("p.pv-entity__dates")).findElements(By.tagName("span")).get(1).getText();
+                    }catch(Exception e){
+                    }
+                    try{
+                        actividades= divTrabajo.findElements(By.tagName("p")).get(4).findElements(By.tagName("span")).get(1).getText();
+                    }catch(Exception e){
+                    }
+                    try{
+                        detallesExtra= elemento.findElement(By.cssSelector("div.pv-entity__extra-details.ember-view")).getText();
+                    }catch(Exception e){
+                    }
+                //    System.out.println("22222222222");
+                //    System.out.println(nombreLugar);
+                //    System.out.println(nombreCurso);
+                //    System.out.println(periodo);
+                //    System.out.println(actividades);
+                //    System.out.println(detallesExtra);
+                    Educacion edu = new Educacion();
+                    edu.setActividades(actividades);
+                    edu.setDetallesExtra(detallesExtra);
+                    edu.setNombreCurso(nombreCurso);
+                    edu.setNombreLugar(nombreLugar);
+                    edu.setPeriodo(periodo);
+
+                    educaciones.add(edu);
+
                 }
-                try{
-                    nombreCurso= divTrabajo.findElements(By.tagName("div")).get(0).findElements(By.tagName("p")).get(0).findElements(By.tagName("span")).get(1).getText();
-                }catch(Exception e){
-                }
-                try{
-                    periodo= divTrabajo.findElement(By.cssSelector("p.pv-entity__dates")).findElements(By.tagName("span")).get(1).getText();
-                }catch(Exception e){
-                }
-                try{
-                    actividades= divTrabajo.findElements(By.tagName("p")).get(4).findElements(By.tagName("span")).get(1).getText();
-                }catch(Exception e){
-                }
-                try{
-                    detallesExtra= elemento.findElement(By.cssSelector("div.pv-entity__extra-details.ember-view")).getText();
-                }catch(Exception e){
-                }
-                System.out.println("22222222222");
-                System.out.println(nombreLugar);
-                System.out.println(nombreCurso);
-                System.out.println(periodo);
-                System.out.println(actividades);
-                System.out.println(detallesExtra);
-                Educacion edu = new Educacion();
-                edu.setActividades(actividades);
-                edu.setDetallesExtra(detallesExtra);
-                edu.setNombreCurso(nombreCurso);
-                edu.setNombreLugar(nombreLugar);
-                edu.setPeriodo(periodo);
-                
-                educaciones.add(edu);
-                
+            }catch(Exception e){
             }
-                       
-            
+
             
             //Logros
             ArrayList<Logro> logros = new ArrayList<>();
