@@ -23,22 +23,32 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author crist
  */
 public class Extractor {
+    String LinkedInUri = "https://www.linkedin.com/mynetwork/invite-connect/connections/"; 
+    WebDriver webDriver = null;   
+    String Contactos;
+    String progreso;
     
-    public ArrayList<Graduado> extraerPerfiles(){
-        ArrayList<Graduado> graduados = new ArrayList<>();
-        String LinkedInUri = "https://www.linkedin.com/mynetwork/invite-connect/connections/";
-        
-        
+    public String consutarProgreso(){
+        return progreso;
+    }
+    
+    public String extraerNumeroContactos(){
         DesiredCapabilities capabilities = null;
+        try{
+        System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+
+        }catch(Exception ex){
         System.setProperty("webdriver.chrome.driver", "chromedriver");
 
+        }
+        
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("start-maximized");
         //options.addArguments("--headless");
         options.addArguments("--window-size=1920x1080");
         options.addArguments("--disable-extensions");
         options.addArguments("--disable-infobars");
-        WebDriver webDriver = null;   
+        
         try {
             webDriver = new ChromeDriver(options);
         } catch(Exception e) {
@@ -70,13 +80,75 @@ public class Extractor {
         }
       
         webDriver.get(LinkedInUri);
-       
+        
         WebElement contacts = (new WebDriverWait(webDriver, 5)).until(
                     ExpectedConditions.presenceOfElementLocated(By.className("core-rail")));
     
         List<WebElement> lista = new ArrayList<>();
         lista = contacts.findElements(By.tagName("li"));
+        Contactos=Integer.toString(lista.size());
+        webDriver.quit();
+    
+     return Contactos;
+    }
+    
+    public ArrayList<Graduado> extraerPerfiles(){
+        ArrayList<Graduado> graduados = new ArrayList<>();
+        
+        DesiredCapabilities capabilities = null;
+        try{
+        System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 
+        }catch(Exception ex){
+        System.setProperty("webdriver.chrome.driver", "chromedriver");
+
+        }
+        
+        ChromeOptions options = new ChromeOptions();
+        //options.addArguments("start-maximized");
+        //options.addArguments("--headless");
+        options.addArguments("--window-size=1920x1080");
+        options.addArguments("--disable-extensions");
+        options.addArguments("--disable-infobars");
+        
+        try {
+            webDriver = new ChromeDriver(options);
+        } catch(Exception e) {
+            System.out.println("**>uh-oh " + e.getMessage());
+        }
+        webDriver.manage().deleteAllCookies();
+        webDriver.get(LinkedInUri);
+        try{
+            WebElement email = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_key-login']")));
+            WebElement password = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_password-login']")));
+            WebElement boton = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
+            email.sendKeys("cristian.pinzon@mail.escuelaing.edu.co");
+            password.sendKeys("Cr1030675544");
+            boton.click();
+        }catch(Exception e){
+            webDriver.get("https://www.linkedin.com/uas/login?session_redirect=%2Fvoyager%2FloginRedirect%2Ehtml&fromSignIn=true&trk=uno-reg-join-sign-in");
+            WebElement email = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_key-login']")));
+            WebElement password = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_password-login']")));
+            WebElement boton = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
+            email.sendKeys("cristian.pinzon@mail.escuelaing.edu.co");
+            password.sendKeys("Cr1030675544");
+            boton.click();
+        }
+      
+        webDriver.get(LinkedInUri);
+        
+        WebElement contacts = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.className("core-rail")));
+    
+        List<WebElement> lista = new ArrayList<>();
+        lista = contacts.findElements(By.tagName("li"));
+        Contactos=Integer.toString(lista.size());
         for (int i=0 ; i< lista.size() ; i++) {
             WebElement boton = lista.get(i).findElement(By.tagName("a"));
             String main_window = webDriver.getWindowHandle();
@@ -312,7 +384,7 @@ public class Extractor {
             
             webDriver.close();
             webDriver.switchTo().window(main_window);
-
+            progreso =Integer.toString(i+1);
         }
 
             //contacts = browser.find_element_by_class_name('core-rail')

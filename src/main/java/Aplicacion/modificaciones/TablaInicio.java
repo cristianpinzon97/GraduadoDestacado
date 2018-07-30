@@ -5,11 +5,13 @@
  */
 package Aplicacion.modificaciones;
 
-import com.sun.prism.j2d.J2DPipeline;
+import Aplicacion.Extractor;
+import Aplicacion.Graduado;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -27,31 +29,51 @@ import javax.swing.table.DefaultTableModel;
  */
 public class TablaInicio {
 
+    ArrayList<Graduado> graduados;
+
     public void verTablaInicio(JTable tabla) {
 
         tabla.setDefaultRenderer(Object.class, new Render());
+
+        graduados = new Extractor().extraerPerfiles();
+
+        Object[][] tablaGraduados = new Object[graduados.size()][9];
 
         JButton aptitud = new JButton("Ver aptitudes");
         JButton educacion = new JButton("Ver educacion");
         JButton experiencia = new JButton("Ver experiencia");
         JButton logro = new JButton("Ver logros");
-        JTextArea textArea = new JTextArea("Esta es una pequeasdasdasdasdasdasdasd asdasdasdkasldkasjdalskdjaslkd jlaksjdalskdjalskdjasldkajsdlksjd");
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        JScrollPane descripcion = new JScrollPane(textArea);
-        Image image = null;
-        try {
-            image = ImageIO.read(new URL("http://i.imgur.com/xiVXrCD.jpg")).getScaledInstance(100, 100, Image.SCALE_DEFAULT);;
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(TablaInicio.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(TablaInicio.class.getName()).log(Level.SEVERE, null, ex);
+        
+        for (int i = 0; i < graduados.size(); i++) {
+            tablaGraduados[i][0] = graduados.get(i).getPerfil().getNombre();
+            Image image = null;
+            try {
+                image = ImageIO.read(new URL(graduados.get(i).getPerfil().getPhoto())).getScaledInstance(128, 158, Image.SCALE_DEFAULT);;
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(TablaInicio.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(TablaInicio.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            JLabel foto = new JLabel(new ImageIcon(image));
+            tablaGraduados[i][1] = image;
+            tablaGraduados[i][2] = graduados.get(i).getPerfil().getCargoActual();
+            JTextArea textArea = new JTextArea(graduados.get(i).getPerfil().getDescripcion());
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            JScrollPane descripcion = new JScrollPane(textArea);
+            tablaGraduados[i][3] = descripcion;
+            tablaGraduados[i][4] = graduados.get(i).getPerfil().getPais();
+            tablaGraduados[i][5] = aptitud;
+            tablaGraduados[i][6] = educacion;
+            tablaGraduados[i][7] = experiencia;
+            tablaGraduados[i][8] = logro;
         }
 
-        JLabel foto = new JLabel(new ImageIcon(image));
+        
 
         DefaultTableModel d = new DefaultTableModel(
-                new Object[][]{{"1", foto, "1", descripcion, "1", aptitud, educacion, experiencia, logro}, {"1", foto, "1", descripcion, "1", aptitud, educacion, experiencia, logro}, {"1", foto, "1", descripcion, "1", aptitud, educacion, experiencia, logro}},
+                tablaGraduados,
                 new Object[]{"Nombre Graduado", "Foto", "Cargo Actual", "Descripcion", "Pais", "Aptitudes", "Educacion", "Experiencia", "Logros"}
         ) {
             public boolean isCellEditable(int row, int column) {
@@ -60,6 +82,6 @@ public class TablaInicio {
         };
 
         tabla.setModel(d);
-        tabla.setRowHeight(100);
+        tabla.setRowHeight(158);
     }
 }
