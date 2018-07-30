@@ -170,7 +170,100 @@ public class Extractor {
             for(int k=0;k<20;k++){
                 jsx.executeScript("window.scrollBy(0,200)");
             }
-
+            
+            
+            //Perfil
+            WebElement divNombre = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(
+                            By.cssSelector("div.mt4.display-flex.ember-view")));
+            
+            String nombre=divNombre.findElement(By.tagName("h1")).getText();
+            String cargo=divNombre.findElement(By.tagName("h2")).getText();
+            String pais=divNombre.findElement(By.tagName("h3")).getText();
+            System.out.println("||||||");
+            System.out.println(nombre);
+            System.out.println(cargo);
+            System.out.println(pais);
+            String descripcion = "";
+            try{
+                descripcion=divNombre.findElement(By.cssSelector("p.pv-top-card-section__summary-text.mt4")).getText();
+            }catch(Exception e){
+                System.out.println("Warning!!!");
+            }
+            WebElement divUrl = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(
+                            By.cssSelector("div.pv-top-card-section__photo-wrapper.pv-top-card-v2-section__photo-wrapper")));
+            WebElement div2Url = divUrl.findElement(By.tagName("div"));
+            WebElement div3Url = div2Url.findElement(By.tagName("div"));
+            String url = div3Url.getAttribute("style").replace("background-image: url(", "").replace("\"", "").replace("\"", "").replace(");", "");
+            Perfil p = new Perfil();
+            p.setCargoActual(cargo);
+            p.setDescripcion(descripcion);
+            p.setNombre(nombre);
+            p.setPais(pais);
+            p.setPhoto(url);
+            
+            
+            System.out.println(descripcion);
+            System.out.println(url);
+            
+            //Experiencias
+            ArrayList<Experiencia> experiencias = new ArrayList<>();
+            
+            WebElement divSectionExp = (new WebDriverWait(webDriver, 5)).until(
+                    ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("//*[@class='profile-detail']/div[4]")));
+            
+            //WebElement botonExpMas = divSectionExp.findElement(By.tagName("span")).findElement(By.tagName("section")).findElement(By.tagName("div")).findElement(By.tagName("section")).findElement(By.tagName("button"));
+            
+            WebElement listaExp = divSectionExp.findElement(By.tagName("ul"));
+            
+            List<WebElement> elementosLista = listaExp.findElements(By.tagName("li"));
+            
+            for(WebElement elemento : elementosLista){
+                List<WebElement> divTrabajos = elemento.findElement(By.tagName("a")).findElements(By.tagName("div"));
+                WebElement divTrabajo = divTrabajos.get(1);
+                String nombre2="", lugar="", fecha="", ubicacion="", descripcion1="";
+                try{
+                    nombre2= divTrabajo.findElement(By.tagName("h3")).getText();
+                }catch(Exception e){
+                }
+                try{
+                    lugar= divTrabajo.findElements(By.tagName("h4")).get(0).getText();
+                }catch(Exception e){
+                }
+                try{
+                    fecha= divTrabajo.findElements(By.tagName("h4")).get(1).getText();
+                }catch(Exception e){
+                }
+                try{
+                    ubicacion= divTrabajo.findElements(By.tagName("h4")).get(2).getText();
+                }catch(Exception e){
+                }
+                try{
+                    descripcion1= divTrabajo.findElements(By.tagName("h3")).get(3).getText();
+                }catch(Exception e){
+                }
+                System.out.println("---------------");
+                System.out.println(descripcion1);
+                System.out.println(fecha);
+                System.out.println(lugar);
+                System.out.println(nombre2);
+                System.out.println(ubicacion);
+                Experiencia exp = new Experiencia();
+                exp.setDescripcion(descripcion1);
+                exp.setFecha(fecha);
+                exp.setLugar(lugar);
+                exp.setNombre(nombre2);
+                exp.setUbicacion(ubicacion);
+                
+                experiencias.add(exp);
+                
+            }
+            
+                       
+            
+            
             //Logros
             ArrayList<Logro> logros = new ArrayList<>();
             
@@ -380,11 +473,13 @@ public class Extractor {
             Graduado g = new Graduado();
             g.setAptitud(aptitud);
             g.setLogros(logros);
+            g.setPerfil(p);
+            g.setExperiencia(experiencias);
             graduados.add(g);
             
             webDriver.close();
             webDriver.switchTo().window(main_window);
-            progreso =Integer.toString(i+1);
+            //progreso = Integer.toString(i+1);
         }
 
             //contacts = browser.find_element_by_class_name('core-rail')

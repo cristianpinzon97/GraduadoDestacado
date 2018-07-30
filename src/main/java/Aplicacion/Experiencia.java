@@ -10,7 +10,15 @@ package Aplicacion;
  * @author crist
  */
 public class Experiencia {
-    private String nombre,lugar,ubicacion,descripcion;
+    private String nombre,lugar,fecha,ubicacion,descripcion;
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
 
 
     public String getNombre() {

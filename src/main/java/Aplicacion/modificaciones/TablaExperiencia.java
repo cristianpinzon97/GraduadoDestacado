@@ -18,17 +18,18 @@ public class TablaExperiencia {
     public void verTablaExperiencia(JTable tabla,ArrayList<Experiencia> exp) {
 
         tabla.setDefaultRenderer(Object.class, new Render());
-        Object[][] experiencia = new Object[exp.size()][3];
+        Object[][] experiencia = new Object[exp.size()][5];
         
         for (int i = 0; i < exp.size(); i++) {
             experiencia[i][0]=exp.get(i).getNombre();
             experiencia[i][1]=exp.get(i).getLugar();
-            experiencia[i][2]=exp.get(i).getDescripcion();
-            
+            experiencia[i][2]=exp.get(i).getFecha();
+            experiencia[i][3]=exp.get(i).getUbicacion();
+            experiencia[i][4]=exp.get(i).getDescripcion();
         }
         DefaultTableModel d = new DefaultTableModel(
                 experiencia,
-                new Object[]{"NOMBRE", "LUGAR","UBICACION","DESCRIPCION"}
+                new Object[]{"NOMBRE", "LUGAR","FECHA","UBICACION","DESCRIPCION"}
         ) {
             public boolean isCellEditable(int row, int column) {
                 return false;
