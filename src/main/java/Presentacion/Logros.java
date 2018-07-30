@@ -26,7 +26,19 @@ public class Logros extends javax.swing.JFrame {
 
     public Logros(Graduado graduado) {
         initComponents();
-        this.graduado=graduado;
+        photo.setIcon(new javax.swing.JLabel() {
+            public javax.swing.Icon getIcon(String URL) {
+                try {
+                    return new javax.swing.ImageIcon(
+                        new java.net.URL(URL)
+                    );
+                } catch (java.net.MalformedURLException e) {
+                }
+                return null;
+            }
+        }.getIcon(graduado.getPerfil().getPhoto()));
+        jLabel1.setText(graduado.getPerfil().getNombre());
+        jTextArea1.setText(graduado.getPerfil().getDescripcion());
         subLogros.setVisible(false);
         subLogros.getTableHeader().setVisible(false);
         tablaLog.verTablaLogros(logros,graduado.getLogros());

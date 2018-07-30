@@ -169,7 +169,7 @@ public class Ingreso extends javax.swing.JFrame {
     }//GEN-LAST:event_entrarBuscarMouseClicked
 
     private void entrarBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entrarBuscarActionPerformed
-
+        this.setVisible(false);
         Extractor extractor = new Extractor();
         
         
@@ -177,6 +177,8 @@ public class Ingreso extends javax.swing.JFrame {
         graduados = extractor.extraerPerfiles();
         
         MostrarInformacion inicio = new MostrarInformacion(graduados);
+        
+        inicio.setVisible(true);
 
     }//GEN-LAST:event_entrarBuscarActionPerformed
 

@@ -17,10 +17,24 @@ public class Experiencia extends javax.swing.JFrame {
     /**
      * Creates new form Aptitudes
      */
-    
+    Graduado graduado;
     TablaExperiencia tablaExp = new TablaExperiencia();
     public Experiencia(Graduado graduado) {
         initComponents();
+        this.graduado=graduado;
+        jLabel1.setIcon(new javax.swing.JLabel() {
+            public javax.swing.Icon getIcon(String URL) {
+                try {
+                    return new javax.swing.ImageIcon(
+                        new java.net.URL(URL)
+                    );
+                } catch (java.net.MalformedURLException e) {
+                }
+                return null;
+            }
+        }.getIcon(graduado.getPerfil().getPhoto()));
+        jLabel2.setText(graduado.getPerfil().getNombre());
+        jTextArea1.setText(graduado.getPerfil().getDescripcion());
         tablaExp.verTablaExperiencia(experiencia,graduado.getExperiencia());
     }
 

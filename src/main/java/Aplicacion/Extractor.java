@@ -149,7 +149,7 @@ public class Extractor {
         List<WebElement> lista = new ArrayList<>();
         lista = contacts.findElements(By.tagName("li"));
         Contactos=Integer.toString(lista.size());
-        for (int i=0 ; i< lista.size() ; i++) {
+        for (int i=0 ; i< 2 ; i++) {
             WebElement boton = lista.get(i).findElement(By.tagName("a"));
             String main_window = webDriver.getWindowHandle();
             String link = boton.getAttribute("href");
@@ -481,6 +481,8 @@ public class Extractor {
             webDriver.switchTo().window(main_window);
             //progreso = Integer.toString(i+1);
         }
+        
+        webDriver.quit();
 
             //contacts = browser.find_element_by_class_name('core-rail')
             //lista = contacts.find_elements(by="tagName", value="li")

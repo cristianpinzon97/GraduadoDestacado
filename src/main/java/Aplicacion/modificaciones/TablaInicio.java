@@ -31,7 +31,7 @@ public class TablaInicio {
 
     ArrayList<Graduado> graduados;
 
-    public void verTablaInicio(JTable tabla,ArrayList<Graduado> g) {
+    public void verTablaInicio(JTable tabla, ArrayList<Graduado> g) {
 
         tabla.setDefaultRenderer(Object.class, new Render());
 
@@ -43,20 +43,19 @@ public class TablaInicio {
         JButton educacion = new JButton("Ver educacion");
         JButton experiencia = new JButton("Ver experiencia");
         JButton logro = new JButton("Ver logros");
-        
+
         for (int i = 0; i < graduados.size(); i++) {
             tablaGraduados[i][0] = graduados.get(i).getPerfil().getNombre();
             Image image = null;
             try {
-                image = ImageIO.read(new URL(graduados.get(i).getPerfil().getPhoto())).getScaledInstance(128, 158, Image.SCALE_DEFAULT);;
+                image = ImageIO.read(new URL(graduados.get(i).getPerfil().getPhoto())).getScaledInstance(128, 158, Image.SCALE_DEFAULT);
             } catch (MalformedURLException ex) {
                 Logger.getLogger(TablaInicio.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(TablaInicio.class.getName()).log(Level.SEVERE, null, ex);
             }
-
             JLabel foto = new JLabel(new ImageIcon(image));
-            tablaGraduados[i][1] = image;
+            tablaGraduados[i][1] = foto;
             tablaGraduados[i][2] = graduados.get(i).getPerfil().getCargoActual();
             JTextArea textArea = new JTextArea(graduados.get(i).getPerfil().getDescripcion());
             textArea.setLineWrap(true);
@@ -69,8 +68,6 @@ public class TablaInicio {
             tablaGraduados[i][7] = experiencia;
             tablaGraduados[i][8] = logro;
         }
-
-        
 
         DefaultTableModel d = new DefaultTableModel(
                 tablaGraduados,

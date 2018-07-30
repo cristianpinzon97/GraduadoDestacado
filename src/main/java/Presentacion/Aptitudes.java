@@ -7,6 +7,12 @@ package Presentacion;
 
 import Aplicacion.Graduado;
 import Aplicacion.modificaciones.TablaAptitudes;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -28,6 +34,21 @@ public class Aptitudes extends javax.swing.JFrame {
     public Aptitudes(Graduado graduado) {
         initComponents();
         this.graduado=graduado;
+        photo.setIcon(new javax.swing.JLabel() {
+            public javax.swing.Icon getIcon(String URL) {
+                try {
+                    return new javax.swing.ImageIcon(
+                        ImageIO.read(new URL(URL)).getScaledInstance(128, 158, Image.SCALE_DEFAULT)
+                    );
+                } catch (java.net.MalformedURLException e) {
+                } catch (IOException ex) {
+                    Logger.getLogger(Aptitudes.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+        }.getIcon(graduado.getPerfil().getPhoto()));
+        nombreGraduado.setText(graduado.getPerfil().getNombre());
+        jTextArea1.setText(graduado.getPerfil().getDescripcion());
         tablaApti.verTablaAptitudes(validaciones,graduado.getAptitud().getValidaciones());
         tablaApti.verTablaAptitudes(conocimientoSector,graduado.getAptitud().getConocimientoSector());
         tablaApti.verTablaAptitudes(herramientas,graduado.getAptitud().getHerramientas());
