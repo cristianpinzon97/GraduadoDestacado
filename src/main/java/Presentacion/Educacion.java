@@ -7,6 +7,12 @@ package Presentacion;
 
 import Aplicacion.Graduado;
 import Aplicacion.modificaciones.TablaEducacion;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -27,9 +33,11 @@ public class Educacion extends javax.swing.JFrame {
             public javax.swing.Icon getIcon(String URL) {
                 try {
                     return new javax.swing.ImageIcon(
-                        new java.net.URL(URL)
+                        ImageIO.read(new URL(URL)).getScaledInstance(128, 158, Image.SCALE_DEFAULT)
                     );
                 } catch (java.net.MalformedURLException e) {
+                } catch (IOException ex) {
+                    Logger.getLogger(Educacion.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 return null;
             }

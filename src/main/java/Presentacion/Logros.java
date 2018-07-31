@@ -9,6 +9,12 @@ import Aplicacion.Graduado;
 import Aplicacion.Sublogro;
 import Aplicacion.modificaciones.TablaLogros;
 import Aplicacion.modificaciones.TablaSublogros;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 
 /**
@@ -30,9 +36,11 @@ public class Logros extends javax.swing.JFrame {
             public javax.swing.Icon getIcon(String URL) {
                 try {
                     return new javax.swing.ImageIcon(
-                        new java.net.URL(URL)
+                        ImageIO.read(new URL(URL)).getScaledInstance(128, 158, Image.SCALE_DEFAULT)
                     );
                 } catch (java.net.MalformedURLException e) {
+                } catch (IOException ex) {
+                    Logger.getLogger(Logros.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 return null;
             }
