@@ -32,6 +32,7 @@ public class Logros extends javax.swing.JFrame {
 
     public Logros(Graduado graduado) {
         initComponents();
+        this.graduado=graduado;
         photo.setIcon(new javax.swing.JLabel() {
             public javax.swing.Icon getIcon(String URL) {
                 try {

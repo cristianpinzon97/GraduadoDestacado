@@ -370,6 +370,11 @@ public class Extractor {
                     }catch(Exception e){
                     }
                     Sublogro st = new Sublogro(h4,fecha,des);
+                    System.out.println(st.getNombreSublogro());
+                    System.out.println(st.getDescripcion());
+                    System.out.println(st.getFecha());
+                    
+                    
                     subLogros.add(st); 
                 }
                 tempLogro.setSublogros(subLogros);
