@@ -5,7 +5,6 @@
  */
 package Aplicacion.modificaciones;
 
-import Aplicacion.Extractor;
 import Aplicacion.Graduado;
 import java.awt.Image;
 import java.io.IOException;
@@ -18,9 +17,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -57,11 +54,7 @@ public class TablaInicio {
             JLabel foto = new JLabel(new ImageIcon(image));
             tablaGraduados[i][1] = foto;
             tablaGraduados[i][2] = graduados.get(i).getPerfil().getCargoActual();
-            JTextArea textArea = new JTextArea(graduados.get(i).getPerfil().getDescripcion());
-            textArea.setLineWrap(true);
-            textArea.setWrapStyleWord(true);
-            JScrollPane descripcion = new JScrollPane(textArea);
-            tablaGraduados[i][3] = descripcion;
+            tablaGraduados[i][3] = graduados.get(i).getPerfil().getDescripcion();
             tablaGraduados[i][4] = graduados.get(i).getPerfil().getPais();
             tablaGraduados[i][5] = aptitud;
             tablaGraduados[i][6] = educacion;
@@ -77,8 +70,9 @@ public class TablaInicio {
                 return false;
             }
         };
-
         tabla.setModel(d);
+        tabla.getColumn("Descripcion").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("Descripcion").setCellEditor(new TextAreaEditor());
         tabla.setRowHeight(158);
     }
 }
