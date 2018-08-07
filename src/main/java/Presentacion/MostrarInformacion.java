@@ -5,6 +5,7 @@
  */
 package Presentacion;
 
+import Aplicacion.Extractor;
 import Aplicacion.Graduado;
 import Aplicacion.modificaciones.TablaInicio;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class MostrarInformacion extends javax.swing.JFrame {
      */
     ArrayList<Graduado> graduados;
     TablaInicio tablaIni = new TablaInicio();
+    private Extractor extractor = new Extractor();
     
     public MostrarInformacion(ArrayList<Graduado> graduados) {
         initComponents();
@@ -39,7 +41,9 @@ public class MostrarInformacion extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaInicio = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        ordenarButton = new javax.swing.JButton();
+        ordenarLista = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -66,13 +70,24 @@ public class MostrarInformacion extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tablaInicio);
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jButton1.setText("Filtrar Información");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        ordenarButton.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        ordenarButton.setText("Ordenar Información");
+        ordenarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                ordenarButtonActionPerformed(evt);
             }
         });
+
+        ordenarLista.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        ordenarLista.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sin Ordenar", "Nombres", "Cantidad de Logros", "Cantidad de Aptitudes", "Cantidad de Experiencia" }));
+        ordenarLista.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ordenarListaActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel1.setText("Ordenar Información por: ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -84,14 +99,21 @@ public class MostrarInformacion extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ordenarLista, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(ordenarButton)
                 .addGap(29, 29, 29))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                .addGap(28, 28, 28)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ordenarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ordenarLista, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 540, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -135,10 +157,16 @@ public class MostrarInformacion extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_tablaInicioMouseWheelMoved
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        FiltrarInformacion filtarInformacion = new FiltrarInformacion(this,true);
-        filtarInformacion.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void ordenarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ordenarButtonActionPerformed
+        String ordenarPor = (String) ordenarLista.getSelectedItem();
+        this.graduados=extractor.filtrarGraduadosPor(ordenarPor, graduados);
+        tablaIni.verTablaInicio(tablaInicio,graduados);
+        
+    }//GEN-LAST:event_ordenarButtonActionPerformed
+
+    private void ordenarListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ordenarListaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ordenarListaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -177,8 +205,10 @@ public class MostrarInformacion extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton ordenarButton;
+    private javax.swing.JComboBox<String> ordenarLista;
     private javax.swing.JTable tablaInicio;
     // End of variables declaration//GEN-END:variables
 }
