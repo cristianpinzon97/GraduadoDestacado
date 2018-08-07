@@ -9,6 +9,9 @@ import Aplicacion.Extractor;
 import Aplicacion.Graduado;
 import Aplicacion.modificaciones.TablaInicio;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 
 /**
@@ -20,14 +23,23 @@ public class MostrarInformacion extends javax.swing.JFrame {
     /**
      * Creates new form MostrarInformacion
      */
-    ArrayList<Graduado> graduados;
-    TablaInicio tablaIni = new TablaInicio();
-    private Extractor extractor = new Extractor();
+    private static MostrarInformacion app;
+
     
-    public MostrarInformacion(ArrayList<Graduado> graduados) {
+
+    ConcurrentLinkedQueue<Graduado> graduados;
+    TablaInicio tablaIni = new TablaInicio();
+    private Extractor extractor;
+    private Boolean estadoBusqueda = null;
+    public static Object o = new Object();
+    public static Object ob2 = new Object();
+    private Thread aplicacion;
+
+    public MostrarInformacion(ConcurrentLinkedQueue<Graduado> graduados, String email, String pass) {
         initComponents();
-        this.graduados=graduados;
-        tablaIni.verTablaInicio(tablaInicio,graduados);
+        extractor = new Extractor(email, pass);
+        aplicacion = new Thread(extractor);
+        //tablaIni.verTablaInicio(tablaInicio,graduados);
     }
 
     /**
@@ -44,6 +56,8 @@ public class MostrarInformacion extends javax.swing.JFrame {
         ordenarButton = new javax.swing.JButton();
         ordenarLista = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
+        startSearch = new javax.swing.JButton();
+        stopSearch = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -89,22 +103,42 @@ public class MostrarInformacion extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setText("Ordenar Información por: ");
 
+        startSearch.setText("Iniciar Busqueda");
+        startSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startSearchActionPerformed(evt);
+            }
+        });
+
+        stopSearch.setText("Pausar Busqueda");
+        stopSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopSearchActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1202, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ordenarLista, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(ordenarButton)
-                .addGap(29, 29, 29))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1202, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addComponent(startSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30)
+                        .addComponent(stopSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ordenarLista, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(ordenarButton)
+                        .addGap(29, 29, 29))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -113,8 +147,12 @@ public class MostrarInformacion extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ordenarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ordenarLista, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(stopSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(startSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(21, 21, 21)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 540, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -122,35 +160,34 @@ public class MostrarInformacion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tablaInicioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaInicioMouseClicked
-        
+        Graduado[] graduadosTemp = graduados.toArray(new Graduado[graduados.size()]);
         int column = tablaInicio.getColumnModel().getColumnIndexAtX(evt.getX());
-        int row =evt.getY()/tablaInicio.getRowHeight();
-        if(row < tablaInicio.getRowCount() && row>=0 && column < tablaInicio.getColumnCount() && column>=0 ){
+        int row = evt.getY() / tablaInicio.getRowHeight();
+        if (row < tablaInicio.getRowCount() && row >= 0 && column < tablaInicio.getColumnCount() && column >= 0) {
             Object value = tablaInicio.getValueAt(row, column);
-            if (value instanceof JButton){
-                ((JButton)value).doClick();
+            if (value instanceof JButton) {
+                ((JButton) value).doClick();
                 JButton boton = (JButton) value;
-                if(column==5){
-                    Aptitudes aptitudesGui = new Aptitudes(graduados.get(row));
+                if (column == 5) {
+                    Aptitudes aptitudesGui = new Aptitudes(graduadosTemp[row]);
                     aptitudesGui.setVisible(true);
-                } 
-                if(column==6){
-                    Educacion educacionGui = new Educacion(graduados.get(row));
+                }
+                if (column == 6) {
+                    Educacion educacionGui = new Educacion(graduadosTemp[row]);
                     educacionGui.setVisible(true);
-                } 
-                if(column==7){
-                    Experiencia experienciaGui = new Experiencia(graduados.get(row));
+                }
+                if (column == 7) {
+                    Experiencia experienciaGui = new Experiencia(graduadosTemp[row]);
                     experienciaGui.setVisible(true);
-                } 
-                if(column==8){
-                    Logros logrosGui = new Logros(graduados.get(row));
+                }
+                if (column == 8) {
+                    Logros logrosGui = new Logros(graduadosTemp[row]);
                     logrosGui.setVisible(true);
-                } 
-                
-                
+                }
+
             }
         }
-        
+
     }//GEN-LAST:event_tablaInicioMouseClicked
 
     private void tablaInicioMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_tablaInicioMouseWheelMoved
@@ -159,56 +196,86 @@ public class MostrarInformacion extends javax.swing.JFrame {
 
     private void ordenarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ordenarButtonActionPerformed
         String ordenarPor = (String) ordenarLista.getSelectedItem();
-        this.graduados=extractor.filtrarGraduadosPor(ordenarPor, graduados);
-        tablaIni.verTablaInicio(tablaInicio,graduados);
-        
+        Graduado[] graduadosTemp = extractor.OrdenarGraduadosPor(ordenarPor);
+        tablaIni.verTablaInicio(tablaInicio, graduadosTemp);
+
     }//GEN-LAST:event_ordenarButtonActionPerformed
 
     private void ordenarListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ordenarListaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_ordenarListaActionPerformed
 
+    private void startSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startSearchActionPerformed
+        if (estadoBusqueda == null) {
+            estadoBusqueda = true;
+            aplicacion.start();
+        } else if(!estadoBusqueda) {
+            synchronized (o) {
+                o.notifyAll();
+            }
+        }
+
+    }//GEN-LAST:event_startSearchActionPerformed
+
+    private void stopSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopSearchActionPerformed
+        if (estadoBusqueda) {
+            estadoBusqueda = false;
+            synchronized (ob2) {
+                try {
+                    ob2.wait();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MostrarInformacion.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_stopSearchActionPerformed
+
+    public synchronized void pintarDatos(ConcurrentLinkedQueue<Graduado> graduados){
+        Graduado[] graduadosTemp = graduados.toArray(new Graduado[graduados.size()]);
+        tablaIni.verTablaInicio(tablaInicio, graduadosTemp);
+    }
+    
+    public static MostrarInformacion getApp() {
+        return app;
+    }
+
+    public static void setApp(MostrarInformacion app) {
+        MostrarInformacion.app = app;
+    }
+    
+    
+    
+    
+    
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MostrarInformacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MostrarInformacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MostrarInformacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MostrarInformacion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
 
-        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new MostrarInformacion().setVisible(true);
-//            }
-//        });
+    public Boolean getEstadoBusqueda() {
+        return estadoBusqueda;
     }
+
+    public void setEstadoBusqueda(Boolean estadoBusqueda) {
+        this.estadoBusqueda = estadoBusqueda;
+    }
+
+    public ConcurrentLinkedQueue<Graduado> getGraduados() {
+        return graduados;
+    }
+
+    public void setGraduados(ConcurrentLinkedQueue<Graduado> graduados) {
+        this.graduados = graduados;
+    }
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton ordenarButton;
     private javax.swing.JComboBox<String> ordenarLista;
+    private javax.swing.JButton startSearch;
+    private javax.swing.JButton stopSearch;
     private javax.swing.JTable tablaInicio;
     // End of variables declaration//GEN-END:variables
 }

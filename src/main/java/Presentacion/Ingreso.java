@@ -7,7 +7,7 @@ package Presentacion;
 
 import Aplicacion.Extractor;
 import Aplicacion.Graduado;
-import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
@@ -18,7 +18,7 @@ public class Ingreso extends javax.swing.JFrame {
     /**
      * Creates new form Ingreso
      */
-    ArrayList<Graduado> graduados;
+    ConcurrentLinkedQueue<Graduado> graduados;
 
     public Ingreso() {
         initComponents();
@@ -170,14 +170,11 @@ public class Ingreso extends javax.swing.JFrame {
 
     private void entrarBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entrarBuscarActionPerformed
         this.setVisible(false);
-        Extractor extractor = new Extractor();
-        
-        
-        
-        graduados = extractor.extraerPerfiles();
-        
-        MostrarInformacion inicio = new MostrarInformacion(graduados);
-        
+        graduados = new ConcurrentLinkedQueue<>();
+        String email= user.getText();
+        String pass= String.valueOf(password.getPassword());
+        MostrarInformacion inicio = new MostrarInformacion(graduados,email,pass);
+        inicio.setApp(inicio);
         inicio.setVisible(true);
 
     }//GEN-LAST:event_entrarBuscarActionPerformed

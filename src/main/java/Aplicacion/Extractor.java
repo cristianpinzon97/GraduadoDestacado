@@ -5,11 +5,14 @@
  */
 package Aplicacion;
 
+import Presentacion.MostrarInformacion;
 import org.openqa.selenium.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -18,15 +21,23 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author crist
  */
-public class Extractor {
+public class Extractor implements Runnable {
 
     String LinkedInUri = "https://www.linkedin.com/mynetwork/invite-connect/connections/";
     WebDriver webDriver = null;
     String Contactos;
+    String email, password;
+    private int numeroBusqueda;
+    ConcurrentLinkedQueue<Graduado> graduados = new ConcurrentLinkedQueue<>();
     private final String ACTITUDES = "Cantidad de Aptitudes";
     private final String LOGROS = "Cantidad de Logros";
     private final String EXPERIENCIA = "Cantidad de Experiencia";
     private final String NOMBRES = "Nombres";
+
+    public Extractor(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 
     public String extraerNumeroContactos() {
         DesiredCapabilities capabilities = null;
@@ -59,8 +70,8 @@ public class Extractor {
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_password-login']")));
             WebElement boton = (new WebDriverWait(webDriver, 5)).until(
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
-            email.sendKeys("cristian.pinzon@mail.escuelaing.edu.co");
-            password.sendKeys("Cr1030675544");
+            email.sendKeys(this.email);
+            password.sendKeys(this.password);
             boton.click();
         } catch (Exception e) {
             webDriver.get("https://www.linkedin.com/uas/login?session_redirect=%2Fvoyager%2FloginRedirect%2Ehtml&fromSignIn=true&trk=uno-reg-join-sign-in");
@@ -70,8 +81,8 @@ public class Extractor {
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_password-login']")));
             WebElement boton = (new WebDriverWait(webDriver, 5)).until(
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
-            email.sendKeys("cristian.pinzon@mail.escuelaing.edu.co");
-            password.sendKeys("Cr1030675544");
+            email.sendKeys(this.email);
+            password.sendKeys(this.password);
             boton.click();
         }
 
@@ -89,7 +100,22 @@ public class Extractor {
     }
 
     public ArrayList<Graduado> extraerPerfiles() {
-        ArrayList<Graduado> graduados = new ArrayList<>();
+
+        return null;
+    }
+
+    public Graduado[] OrdenarGraduadosPor(String metodoFiltrar) {
+        Graduado[] sort = graduados.toArray(new Graduado[graduados.size()]);
+        if (metodoFiltrar.equals(NOMBRES)) {
+            Arrays.sort(sort, (Graduado g1, Graduado g2) -> g1.getPerfil().getNombre().compareTo(g2.getPerfil().getNombre()));
+        } else if (metodoFiltrar.equals(NOMBRES)) {
+
+        }
+        return sort;
+    }
+
+    @Override
+    public void run() {
 
         DesiredCapabilities capabilities = null;
         try {
@@ -121,8 +147,8 @@ public class Extractor {
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_password-login']")));
             WebElement boton = (new WebDriverWait(webDriver, 5)).until(
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
-            email.sendKeys("cristian.pinzon@mail.escuelaing.edu.co");
-            password.sendKeys("Cr1030675544");
+            email.sendKeys(this.email);
+            password.sendKeys(this.password);
             boton.click();
         } catch (Exception e) {
             webDriver.get("https://www.linkedin.com/uas/login?session_redirect=%2Fvoyager%2FloginRedirect%2Ehtml&fromSignIn=true&trk=uno-reg-join-sign-in");
@@ -132,8 +158,10 @@ public class Extractor {
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_password-login']")));
             WebElement boton = (new WebDriverWait(webDriver, 5)).until(
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
-            email.sendKeys("ricardo.pinto@mail.escuelaing.edu.co");
-            password.sendKeys("Insertiniciofin8");
+            email.sendKeys(this.email);
+            password.sendKeys(this.password);
+            //email.sendKeys("ricardo.pinto@mail.escuelaing.edu.co");
+            //password.sendKeys("Insertiniciofin8");
             //email.sendKeys("cristian.pinzon@mail.escuelaing.edu.co");
             //password.sendKeys("Cr1030675544");
             boton.click();
@@ -147,7 +175,7 @@ public class Extractor {
         List<WebElement> lista = new ArrayList<>();
         lista = contacts.findElements(By.tagName("li"));
         Contactos = Integer.toString(lista.size());
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 5; i++) {
             WebElement boton = lista.get(i).findElement(By.tagName("a"));
             String main_window = webDriver.getWindowHandle();
             String link = boton.getAttribute("href");
@@ -551,20 +579,27 @@ public class Extractor {
 
             webDriver.close();
             webDriver.switchTo().window(main_window);
+
+            MostrarInformacion.getApp().pintarDatos(graduados);
+            if (!MostrarInformacion.getApp().getEstadoBusqueda()) {
+
+                synchronized (MostrarInformacion.getApp().o) {
+                    try {
+                        synchronized (MostrarInformacion.getApp().ob2) {
+                            MostrarInformacion.getApp().ob2.notify();
+                        }
+                        MostrarInformacion.getApp().o.wait();
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Extractor.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
             //progreso = Integer.toString(i+1);
         }
 
         webDriver.quit();
-
-        return graduados;
+        MostrarInformacion.getApp().setGraduados(graduados);
     }
 
-    public ArrayList<Graduado> filtrarGraduadosPor(String metodoFiltrar, ArrayList<Graduado> unSort) {
-        ArrayList<Graduado> sort =unSort;
-        if (metodoFiltrar.equals(NOMBRES)) {
-             Collections.sort(sort, (Graduado g1, Graduado g2) -> g1.getPerfil().getNombre().compareTo(g2.getPerfil().getNombre()));
-        }
-        return sort;
-    }
-  
 }

@@ -26,26 +26,26 @@ import javax.swing.table.DefaultTableModel;
  */
 public class TablaInicio {
 
-    ArrayList<Graduado> graduados;
+    Graduado[] graduados;
 
-    public void verTablaInicio(JTable tabla, ArrayList<Graduado> g) {
+    public void verTablaInicio(JTable tabla, Graduado[] g) {
 
         tabla.setDefaultRenderer(Object.class, new Render());
 
         graduados = g;
 
-        Object[][] tablaGraduados = new Object[graduados.size()][9];
+        Object[][] tablaGraduados = new Object[graduados.length][9];
 
         JButton aptitud = new JButton("Ver aptitudes");
         JButton educacion = new JButton("Ver educacion");
         JButton experiencia = new JButton("Ver experiencia");
         JButton logro = new JButton("Ver logros");
 
-        for (int i = 0; i < graduados.size(); i++) {
-            tablaGraduados[i][0] = graduados.get(i).getPerfil().getNombre();
+        for (int i = 0; i < graduados.length; i++) {
+            tablaGraduados[i][0] = graduados[i].getPerfil().getNombre();
             Image image = null;
             try {
-                image = ImageIO.read(new URL(graduados.get(i).getPerfil().getPhoto())).getScaledInstance(128, 158, Image.SCALE_DEFAULT);
+                image = ImageIO.read(new URL(graduados[i].getPerfil().getPhoto())).getScaledInstance(128, 158, Image.SCALE_DEFAULT);
             } catch (MalformedURLException ex) {
                 Logger.getLogger(TablaInicio.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -53,9 +53,9 @@ public class TablaInicio {
             }
             JLabel foto = new JLabel(new ImageIcon(image));
             tablaGraduados[i][1] = foto;
-            tablaGraduados[i][2] = graduados.get(i).getPerfil().getCargoActual();
-            tablaGraduados[i][3] = graduados.get(i).getPerfil().getDescripcion();
-            tablaGraduados[i][4] = graduados.get(i).getPerfil().getPais();
+            tablaGraduados[i][2] = graduados[i].getPerfil().getCargoActual();
+            tablaGraduados[i][3] = graduados[i].getPerfil().getDescripcion();
+            tablaGraduados[i][4] = graduados[i].getPerfil().getPais();
             tablaGraduados[i][5] = aptitud;
             tablaGraduados[i][6] = educacion;
             tablaGraduados[i][7] = experiencia;
