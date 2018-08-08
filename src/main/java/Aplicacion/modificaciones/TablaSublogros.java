@@ -25,24 +25,29 @@ public class TablaSublogros {
         for (int i = 0; i < sublog.size(); i++) {
             sublogros[i][0] = sublog.get(i).getNombreSublogro();
             sublogros[i][1] = sublog.get(i).getFecha();
-            JTextArea textArea = new JTextArea(sublog.get(i).getDescripcion());
-            textArea.setLineWrap(true);
-            textArea.setWrapStyleWord(true);
-            JScrollPane descripcion = new JScrollPane(textArea);
-            sublogros[i][2] = descripcion;
+            sublogros[i][2] = sublog.get(i).getDescripcion();
 
         }
-
-        DefaultTableModel d = new DefaultTableModel(
-                sublogros,
-                new Object[]{"NOMBRE SUBLOGRO", "FECHA DEL SUBLOGRO", "DESCRIPCION"}
-        ) {
+        
+        DefaultTableModel d = new DefaultTableModel() {
+            // make first cell uneditable
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return true;
             }
         };
+        d.setDataVector(
+                sublogros,
+                new Object[]{"NOMBRE SUBLOGRO", "FECHA DEL SUBLOGRO", "DESCRIPCION"}
+        );
 
         tabla.setModel(d);
-        tabla.setRowHeight(50);
+        tabla.getColumn("NOMBRE SUBLOGRO").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("NOMBRE SUBLOGRO").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("FECHA DEL SUBLOGRO").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("FECHA DEL SUBLOGRO").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("DESCRIPCION").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("DESCRIPCION").setCellEditor(new TextAreaEditor());
+        tabla.setModel(d);
+        tabla.setRowHeight(120);
     }
 }

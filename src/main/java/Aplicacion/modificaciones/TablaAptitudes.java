@@ -25,16 +25,23 @@ public class TablaAptitudes {
             tablaY[i][1]=tablaX.get(i).getCantidad();
             
         }
-        DefaultTableModel d = new DefaultTableModel(
-                tablaY,
-                new Object[]{"Titulo", "Valor Titulo"}
-        ) {
+        
+        DefaultTableModel d = new DefaultTableModel() {
+            // make first cell uneditable
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return true;
             }
         };
+        d.setDataVector(
+                tablaY,
+                new Object[]{"Titulo", "Valor Titulo"}
+        );
 
         tabla.setModel(d);
-        tabla.setRowHeight(50);
+        tabla.getColumn("Titulo").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("Titulo").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("Valor Titulo").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("Valor Titulo").setCellEditor(new TextAreaEditor());
+        tabla.setRowHeight(120);
     }
 }

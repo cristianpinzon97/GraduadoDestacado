@@ -31,73 +31,18 @@ public class Extractor implements Runnable {
     ConcurrentLinkedQueue<Graduado> graduados = new ConcurrentLinkedQueue<>();
     private final String ACTITUDES = "Cantidad de Aptitudes";
     private final String LOGROS = "Cantidad de Logros";
-    private final String EXPERIENCIA = "Cantidad de Experiencia";
+    private final String EXPERIENCIA = "Experiencia";
+    private final String EDUCACION = "Educacion";
     private final String NOMBRES = "Nombres";
+
+    public Extractor() {
+    }
 
     public Extractor(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public String extraerNumeroContactos() {
-        DesiredCapabilities capabilities = null;
-        try {
-            System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-
-        } catch (Exception ex) {
-            System.setProperty("webdriver.chrome.driver", "chromedriver");
-
-        }
-
-        ChromeOptions options = new ChromeOptions();
-        //options.addArguments("start-maximized");
-        //options.addArguments("--headless");
-        options.addArguments("--window-size=1920x1080");
-        options.addArguments("--disable-extensions");
-        options.addArguments("--disable-infobars");
-
-        try {
-            webDriver = new ChromeDriver(options);
-        } catch (Exception e) {
-            System.out.println("**>uh-oh " + e.getMessage());
-        }
-        webDriver.manage().deleteAllCookies();
-        webDriver.get(LinkedInUri);
-        try {
-            WebElement email = (new WebDriverWait(webDriver, 5)).until(
-                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_key-login']")));
-            WebElement password = (new WebDriverWait(webDriver, 5)).until(
-                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_password-login']")));
-            WebElement boton = (new WebDriverWait(webDriver, 5)).until(
-                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
-            email.sendKeys(this.email);
-            password.sendKeys(this.password);
-            boton.click();
-        } catch (Exception e) {
-            webDriver.get("https://www.linkedin.com/uas/login?session_redirect=%2Fvoyager%2FloginRedirect%2Ehtml&fromSignIn=true&trk=uno-reg-join-sign-in");
-            WebElement email = (new WebDriverWait(webDriver, 5)).until(
-                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_key-login']")));
-            WebElement password = (new WebDriverWait(webDriver, 5)).until(
-                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='session_password-login']")));
-            WebElement boton = (new WebDriverWait(webDriver, 5)).until(
-                    ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
-            email.sendKeys(this.email);
-            password.sendKeys(this.password);
-            boton.click();
-        }
-
-        webDriver.get(LinkedInUri);
-
-        WebElement contacts = (new WebDriverWait(webDriver, 5)).until(
-                ExpectedConditions.presenceOfElementLocated(By.className("core-rail")));
-
-        List<WebElement> lista = new ArrayList<>();
-        lista = contacts.findElements(By.tagName("li"));
-        Contactos = Integer.toString(lista.size());
-        webDriver.quit();
-
-        return Contactos;
-    }
 
     public ArrayList<Graduado> extraerPerfiles() {
 
@@ -108,10 +53,80 @@ public class Extractor implements Runnable {
         Graduado[] sort = graduados.toArray(new Graduado[graduados.size()]);
         if (metodoFiltrar.equals(NOMBRES)) {
             Arrays.sort(sort, (Graduado g1, Graduado g2) -> g1.getPerfil().getNombre().compareTo(g2.getPerfil().getNombre()));
-        } else if (metodoFiltrar.equals(NOMBRES)) {
-
+        } else if (metodoFiltrar.equals(LOGROS)) {
+            Arrays.sort(sort, (Graduado g1, Graduado g2) -> g2.getLogros().size() - g1.getLogros().size());
+        } else if (metodoFiltrar.equals(EXPERIENCIA)) {
+            Arrays.sort(sort, (Graduado g1, Graduado g2) -> g2.getExperiencia().size() - g1.getExperiencia().size());
+        } else if (metodoFiltrar.equals(EDUCACION)) {
+            Arrays.sort(sort, (Graduado g1, Graduado g2) -> g2.getEducacion().size() - g1.getEducacion().size());
         }
         return sort;
+    }
+
+    public Graduado[] filtrar(HashMap<String, String> filtros, ConcurrentLinkedQueue<Graduado> graduados) {
+        ArrayList<Graduado> gTem = new ArrayList<>();
+        for (Graduado graduado : graduados) {
+            if (filtros.containsKey("nombreGraduado")) {
+                if (graduado.getPerfil().getNombre().toLowerCase().contains(filtros.get("nombreGraduado").toLowerCase())) {
+                    if (!gTem.contains(graduado)) {
+                        gTem.add(graduado);
+                    }
+                }
+            } else if (filtros.containsKey("paisGraduado")) {
+                if (graduado.getPerfil().getPais().toLowerCase().contains(filtros.get("paisGraduado").toLowerCase())) {
+                    if (!gTem.contains(graduado)) {
+                        gTem.add(graduado);
+                    }
+                }
+            } else if (filtros.containsKey("cargoActualGraduado")) {
+                if (graduado.getPerfil().getCargoActual().toLowerCase().contains(filtros.get("cargoActualGraduado").toLowerCase())) {
+                    if (!gTem.contains(graduado)) {
+                        gTem.add(graduado);
+                    }
+                }
+            } else if (filtros.containsKey("lugarEstudioGraduado")) {
+                for (Educacion educacion : graduado.getEducacion()) {
+                    if (educacion.getNombreLugar().toLowerCase().contains(filtros.get("lugarEstudioGraduado").toLowerCase())) {
+                        if (!gTem.contains(graduado)) {
+                            gTem.add(graduado);
+                        }
+                    }
+                }
+            } else if (filtros.containsKey("nombreEstudioGraduado")) {
+                for (Educacion educacion : graduado.getEducacion()) {
+                    if (educacion.getNombreCurso().toLowerCase().contains(filtros.get("nombreEstudioGraduado").toLowerCase())) {
+                        if (!gTem.contains(graduado)) {
+                            gTem.add(graduado);
+                        }
+                    }
+                }
+            } else if (filtros.containsKey("fechaEstudioGraduado")) {
+                for (Educacion educacion : graduado.getEducacion()) {
+                    try {
+                        String[] periodo = educacion.getPeriodo().split(" – ");
+                        if (periodo.length > 1) {
+                            if (Integer.parseInt(periodo[0]) <= Integer.parseInt(filtros.get("fechaEstudioGraduado").toLowerCase())
+                                    && Integer.parseInt(periodo[1]) >= Integer.parseInt(filtros.get("fechaEstudioGraduado").toLowerCase())) {
+                                if (!gTem.contains(graduado)) {
+                                    gTem.add(graduado);
+                                }
+                            }
+                        }else if (periodo.length == 1) {
+                            if (Integer.parseInt(periodo[0]) >= Integer.parseInt(filtros.get("fechaEstudioGraduado").toLowerCase())) {
+                                if (!gTem.contains(graduado)) {
+                                    gTem.add(graduado);
+                                }
+                            }
+                        }
+
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+        }
+
+        return gTem.toArray(new Graduado[gTem.size()]);
     }
 
     @Override
@@ -128,7 +143,7 @@ public class Extractor implements Runnable {
 
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("start-maximized");
-        //options.addArguments("--headless");
+        options.addArguments("--headless");
         options.addArguments("--window-size=1920x1080");
         options.addArguments("--disable-extensions");
         options.addArguments("--disable-infobars");
@@ -160,22 +175,23 @@ public class Extractor implements Runnable {
                     ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='btn-primary']")));
             email.sendKeys(this.email);
             password.sendKeys(this.password);
-            //email.sendKeys("ricardo.pinto@mail.escuelaing.edu.co");
-            //password.sendKeys("Insertiniciofin8");
-            //email.sendKeys("cristian.pinzon@mail.escuelaing.edu.co");
-            //password.sendKeys("Cr1030675544");
             boton.click();
         }
 
         webDriver.get(LinkedInUri);
+        JavascriptExecutor jsx = (JavascriptExecutor) webDriver;
+        //This will scroll the web page till end.	
+        for (int k = 0; k < 20; k++) {
+            jsx.executeScript("window.scrollBy(0,500)");
+        }
 
         WebElement contacts = (new WebDriverWait(webDriver, 5)).until(
                 ExpectedConditions.presenceOfElementLocated(By.className("core-rail")));
 
         List<WebElement> lista = new ArrayList<>();
         lista = contacts.findElements(By.tagName("li"));
-        Contactos = Integer.toString(lista.size());
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < lista.size(); i++) {
+            
             WebElement boton = lista.get(i).findElement(By.tagName("a"));
             String main_window = webDriver.getWindowHandle();
             String link = boton.getAttribute("href");
@@ -191,7 +207,6 @@ public class Extractor implements Runnable {
             //    webDriver.switchTo().window(winHandle);
             //}
 
-            JavascriptExecutor jsx = (JavascriptExecutor) webDriver;
             //This will scroll the web page till end.	
             for (int k = 0; k < 20; k++) {
                 jsx.executeScript("window.scrollBy(0,200)");
@@ -239,13 +254,6 @@ public class Extractor implements Runnable {
             p.setPais(pais);
             p.setPhoto(url);
 
-            System.out.println("||||||");
-            System.out.println(nombre);
-            System.out.println(cargo);
-            System.out.println(pais);
-            System.out.println(descripcion);
-            System.out.println(url);
-
             //Experiencias
             ArrayList<Experiencia> experiencias = new ArrayList<>();
 
@@ -282,12 +290,7 @@ public class Extractor implements Runnable {
                     descripcion1 = elemento.findElement(By.cssSelector("div.pv-entity__extra-details.ember-view")).getText().replace("Nombre de la empresa\n", "");
                 } catch (Exception e) {
                 }
-                System.out.println("11111111111111");
-                //    System.out.println(descripcion1);
-                //    System.out.println(fecha);
-                System.out.println(lugar);
-                //    System.out.println(nombre2);
-                //    System.out.println(ubicacion);
+               
                 Experiencia exp = new Experiencia();
                 exp.setDescripcion(descripcion1);
                 exp.setFecha(fecha);
@@ -335,12 +338,7 @@ public class Extractor implements Runnable {
                         detallesExtra = elemento.findElement(By.cssSelector("div.pv-entity__extra-details.ember-view")).getText();
                     } catch (Exception e) {
                     }
-                    //    System.out.println("22222222222");
-                    //    System.out.println(nombreLugar);
-                    //    System.out.println(nombreCurso);
-                    //    System.out.println(periodo);
-                    //    System.out.println(actividades);
-                    //    System.out.println(detallesExtra);
+                 
                     Educacion edu = new Educacion();
                     edu.setActividades(actividades);
                     edu.setDetallesExtra(detallesExtra);
@@ -389,10 +387,7 @@ public class Extractor implements Runnable {
                     } catch (Exception e) {
                     }
                     Sublogro st = new Sublogro(h4, fecha, des);
-                    System.out.println(st.getNombreSublogro());
-                    System.out.println(st.getDescripcion());
-                    System.out.println(st.getFecha());
-
+               
                     subLogros.add(st);
                 }
                 tempLogro.setSublogros(subLogros);
@@ -566,8 +561,7 @@ public class Extractor implements Runnable {
             aptitud.setInterpersonales(interpersonales);
             aptitud.setOtros(otros);
 
-            System.out.println(aptitud);
-            System.out.println(logros);
+        
 
             Graduado g = new Graduado();
             g.setAptitud(aptitud);
@@ -581,6 +575,7 @@ public class Extractor implements Runnable {
             webDriver.switchTo().window(main_window);
 
             MostrarInformacion.getApp().pintarDatos(graduados);
+            MostrarInformacion.getApp().progreso.setjProgressBar1((int)((i+1)*100/lista.size()));
             if (!MostrarInformacion.getApp().getEstadoBusqueda()) {
 
                 synchronized (MostrarInformacion.getApp().o) {
@@ -600,6 +595,9 @@ public class Extractor implements Runnable {
 
         webDriver.quit();
         MostrarInformacion.getApp().setGraduados(graduados);
+        MostrarInformacion.getApp().setFinBusqueda(true);
+        MostrarInformacion.getApp().progreso.setVisible(false);
+        MostrarInformacion.getApp().progreso.setjLabel1("El proceso a finalizado");
     }
 
 }

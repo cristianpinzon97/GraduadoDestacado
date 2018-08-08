@@ -9,10 +9,12 @@ import Aplicacion.Extractor;
 import Aplicacion.Graduado;
 import Aplicacion.modificaciones.TablaInicio;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 
 /**
  *
@@ -25,21 +27,24 @@ public class MostrarInformacion extends javax.swing.JFrame {
      */
     private static MostrarInformacion app;
 
-    
-
     ConcurrentLinkedQueue<Graduado> graduados;
     TablaInicio tablaIni = new TablaInicio();
     private Extractor extractor;
-    private Boolean estadoBusqueda = null;
+    private Boolean estadoBusqueda = null, finBusqueda = false;
+
     public static Object o = new Object();
     public static Object ob2 = new Object();
     private Thread aplicacion;
+    private Graduado[] graduadosTemp;
+    public JDialog filtroVista;
+    public EstadoAplicacion progreso;
 
     public MostrarInformacion(ConcurrentLinkedQueue<Graduado> graduados, String email, String pass) {
         initComponents();
+        tablaInicio.setVisible(false);
+        tablaInicio.getTableHeader().setVisible(false);
         extractor = new Extractor(email, pass);
         aplicacion = new Thread(extractor);
-        //tablaIni.verTablaInicio(tablaInicio,graduados);
     }
 
     /**
@@ -53,13 +58,15 @@ public class MostrarInformacion extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaInicio = new javax.swing.JTable();
-        ordenarButton = new javax.swing.JButton();
         ordenarLista = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         startSearch = new javax.swing.JButton();
         stopSearch = new javax.swing.JButton();
+        filtrarButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         tablaInicio.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -84,16 +91,9 @@ public class MostrarInformacion extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tablaInicio);
 
-        ordenarButton.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        ordenarButton.setText("Ordenar Información");
-        ordenarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ordenarButtonActionPerformed(evt);
-            }
-        });
-
         ordenarLista.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        ordenarLista.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sin Ordenar", "Nombres", "Cantidad de Logros", "Cantidad de Aptitudes", "Cantidad de Experiencia" }));
+        ordenarLista.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sin Ordenar", "Nombres", "Cantidad de Logros", "Cantidad de Aptitudes", "Experiencia", "Educacion" }));
+        ordenarLista.setEnabled(false);
         ordenarLista.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ordenarListaActionPerformed(evt);
@@ -103,7 +103,7 @@ public class MostrarInformacion extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setText("Ordenar Información por: ");
 
-        startSearch.setText("Iniciar Busqueda");
+        startSearch.setText("Iniciar/Reiniciar Busqueda");
         startSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startSearchActionPerformed(evt);
@@ -111,9 +111,26 @@ public class MostrarInformacion extends javax.swing.JFrame {
         });
 
         stopSearch.setText("Pausar Busqueda");
+        stopSearch.setEnabled(false);
         stopSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 stopSearchActionPerformed(evt);
+            }
+        });
+
+        filtrarButton.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        filtrarButton.setText("Filtrar Informacion");
+        filtrarButton.setEnabled(false);
+        filtrarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filtrarButtonActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Ver progreso");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -124,35 +141,39 @@ public class MostrarInformacion extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1202, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1202, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(9, 9, 9)
                         .addComponent(startSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
-                        .addComponent(stopSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(39, 39, 39)
+                        .addComponent(stopSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ordenarLista, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(ordenarButton)
-                        .addGap(29, 29, 29))))
+                        .addGap(49, 49, 49)
+                        .addComponent(ordenarLista, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(63, 63, 63)
+                        .addComponent(filtrarButton)
+                        .addGap(28, 28, 28)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ordenarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ordenarLista, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(stopSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(startSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(21, 21, 21)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(2, 2, 2)
+                        .addComponent(startSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(stopSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(ordenarLista)
+                    .addComponent(filtrarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 540, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -160,7 +181,7 @@ public class MostrarInformacion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tablaInicioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaInicioMouseClicked
-        Graduado[] graduadosTemp = graduados.toArray(new Graduado[graduados.size()]);
+        //graduadosTemp = graduados.toArray(new Graduado[graduados.size()]);
         int column = tablaInicio.getColumnModel().getColumnIndexAtX(evt.getX());
         int row = evt.getY() / tablaInicio.getRowHeight();
         if (row < tablaInicio.getRowCount() && row >= 0 && column < tablaInicio.getColumnCount() && column >= 0) {
@@ -194,22 +215,23 @@ public class MostrarInformacion extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_tablaInicioMouseWheelMoved
 
-    private void ordenarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ordenarButtonActionPerformed
-        String ordenarPor = (String) ordenarLista.getSelectedItem();
-        Graduado[] graduadosTemp = extractor.OrdenarGraduadosPor(ordenarPor);
-        tablaIni.verTablaInicio(tablaInicio, graduadosTemp);
-
-    }//GEN-LAST:event_ordenarButtonActionPerformed
-
     private void ordenarListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ordenarListaActionPerformed
-        // TODO add your handling code here:
+        String ordenarPor = (String) ordenarLista.getSelectedItem();
+        graduadosTemp = extractor.OrdenarGraduadosPor(ordenarPor);
+        tablaIni.verTablaInicio(tablaInicio, graduadosTemp);
     }//GEN-LAST:event_ordenarListaActionPerformed
 
     private void startSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startSearchActionPerformed
         if (estadoBusqueda == null) {
             estadoBusqueda = true;
+            ordenarLista.setEnabled(false);
+            filtrarButton.setEnabled(false);
+            stopSearch.setEnabled(true);
             aplicacion.start();
-        } else if(!estadoBusqueda) {
+            tablaInicio.getTableHeader().setVisible(true);
+            progreso = new EstadoAplicacion(app, true);
+            progreso.setVisible(true);
+        } else if (!estadoBusqueda) {
             synchronized (o) {
                 o.notifyAll();
             }
@@ -220,6 +242,9 @@ public class MostrarInformacion extends javax.swing.JFrame {
     private void stopSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopSearchActionPerformed
         if (estadoBusqueda) {
             estadoBusqueda = false;
+            ordenarLista.setEnabled(true);
+            filtrarButton.setEnabled(true);
+            stopSearch.setEnabled(false);
             synchronized (ob2) {
                 try {
                     ob2.wait();
@@ -230,11 +255,34 @@ public class MostrarInformacion extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_stopSearchActionPerformed
 
-    public synchronized void pintarDatos(ConcurrentLinkedQueue<Graduado> graduados){
-        Graduado[] graduadosTemp = graduados.toArray(new Graduado[graduados.size()]);
+    private void filtrarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filtrarButtonActionPerformed
+        filtroVista = new filtrarInformacion(app, true);
+        this.setVisible(false);
+        filtroVista.setVisible(true);
+    }//GEN-LAST:event_filtrarButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        progreso.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    public synchronized void pintarDatos(ConcurrentLinkedQueue<Graduado> graduados) {
+        this.graduados = graduados;
+        tablaInicio.setVisible(true);
+        graduadosTemp = graduados.toArray(new Graduado[graduados.size()]);
         tablaIni.verTablaInicio(tablaInicio, graduadosTemp);
     }
-    
+
+    public void pintarDatosFiltradosGraduado(Graduado[] graduadosTemp) {
+        this.graduadosTemp = graduadosTemp;
+        tablaIni.verTablaInicio(tablaInicio, graduadosTemp);
+    }
+
+    public void habilitarOrdenar() {
+        if (finBusqueda) {
+            ordenarLista.setEnabled(true);
+        }
+    }
+
     public static MostrarInformacion getApp() {
         return app;
     }
@@ -242,15 +290,10 @@ public class MostrarInformacion extends javax.swing.JFrame {
     public static void setApp(MostrarInformacion app) {
         MostrarInformacion.app = app;
     }
-    
-    
-    
-    
-    
+
     /**
      * @param args the command line arguments
      */
-
     public Boolean getEstadoBusqueda() {
         return estadoBusqueda;
     }
@@ -264,15 +307,27 @@ public class MostrarInformacion extends javax.swing.JFrame {
     }
 
     public void setGraduados(ConcurrentLinkedQueue<Graduado> graduados) {
+        this.graduadosTemp = graduados.toArray(new Graduado[graduados.size()]);
         this.graduados = graduados;
     }
-    
-    
+
+    public Boolean getFinBusqueda() {
+        return finBusqueda;
+    }
+
+    public void setFinBusqueda(Boolean finBusqueda) {
+        this.finBusqueda = finBusqueda;
+        ordenarLista.setEnabled(finBusqueda);
+        filtrarButton.setEnabled(finBusqueda);
+        stopSearch.setEnabled(!finBusqueda);
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton filtrarButton;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JButton ordenarButton;
     private javax.swing.JComboBox<String> ordenarLista;
     private javax.swing.JButton startSearch;
     private javax.swing.JButton stopSearch;

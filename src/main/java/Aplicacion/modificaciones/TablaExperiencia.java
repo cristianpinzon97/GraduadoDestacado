@@ -27,16 +27,30 @@ public class TablaExperiencia {
             experiencia[i][3]=exp.get(i).getUbicacion();
             experiencia[i][4]=exp.get(i).getDescripcion();
         }
-        DefaultTableModel d = new DefaultTableModel(
-                experiencia,
-                new Object[]{"NOMBRE", "LUGAR","FECHA","UBICACION","DESCRIPCION"}
-        ) {
+        
+        DefaultTableModel d = new DefaultTableModel() {
+            // make first cell uneditable
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return true;
             }
         };
+        d.setDataVector(
+                experiencia,
+                new Object[]{"NOMBRE", "LUGAR","FECHA","UBICACION","DESCRIPCION"}
+        );
 
         tabla.setModel(d);
-        tabla.setRowHeight(50);
+        tabla.getColumn("NOMBRE").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("NOMBRE").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("LUGAR").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("LUGAR").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("FECHA").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("FECHA").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("UBICACION").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("UBICACION").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("DESCRIPCION").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("DESCRIPCION").setCellEditor(new TextAreaEditor());
+        
+        tabla.setRowHeight(120);
     }
 }

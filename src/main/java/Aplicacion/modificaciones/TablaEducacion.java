@@ -28,16 +28,30 @@ public class TablaEducacion {
             educacion[i][4]=edu.get(i).getDetallesExtra();
             
         }
-        DefaultTableModel d = new DefaultTableModel(
-                educacion,
-                new Object[]{"NOMBRE DEL LUGAR", "NOMBRE DEEL CURSO", "PERIODO","ACTIVIDADES","DETALLES EXTRA"}
-        ) {
+        
+        DefaultTableModel d = new DefaultTableModel() {
+            // make first cell uneditable
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return true;
             }
         };
+        d.setDataVector(
+                educacion,
+                new Object[]{"NOMBRE DEL LUGAR", "NOMBRE DEL CURSO", "PERIODO","ACTIVIDADES","DETALLES EXTRA"}
+        );
 
         tabla.setModel(d);
-        tabla.setRowHeight(50);
+        tabla.getColumn("NOMBRE DEL LUGAR").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("NOMBRE DEL LUGAR").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("NOMBRE DEL CURSO").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("NOMBRE DEL CURSO").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("PERIODO").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("PERIODO").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("ACTIVIDADES").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("ACTIVIDADES").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("DETALLES EXTRA").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("DETALLES EXTRA").setCellEditor(new TextAreaEditor());
+        
+        tabla.setRowHeight(120);
     }
 }

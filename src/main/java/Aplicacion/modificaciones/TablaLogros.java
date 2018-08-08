@@ -29,18 +29,23 @@ public class TablaLogros {
             
         }
         
-        
-        
-        DefaultTableModel d = new DefaultTableModel(
-                logros,
-                new Object[]{"NOMBRE LOGRO", "NUMERO TIPO LOGROS","SUBLOGROS"}
-        ) {
+        DefaultTableModel d = new DefaultTableModel() {
+            // make first cell uneditable
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return !(column==2);
             }
         };
+        d.setDataVector(
+                logros,
+                new Object[]{"NOMBRE LOGRO", "NUMERO TIPO LOGROS","SUBLOGROS"}
+        );
 
         tabla.setModel(d);
-        tabla.setRowHeight(50);
+        tabla.getColumn("NOMBRE LOGRO").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("NOMBRE LOGRO").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("NUMERO TIPO LOGROS").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("NUMERO TIPO LOGROS").setCellEditor(new TextAreaEditor());
+        
+        tabla.setRowHeight(120);
     }
 }

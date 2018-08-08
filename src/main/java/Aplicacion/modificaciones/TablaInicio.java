@@ -62,17 +62,26 @@ public class TablaInicio {
             tablaGraduados[i][8] = logro;
         }
 
-        DefaultTableModel d = new DefaultTableModel(
-                tablaGraduados,
-                new Object[]{"Nombre Graduado", "Foto", "Cargo Actual", "Descripcion", "Pais", "Aptitudes", "Educacion", "Experiencia", "Logros"}
-        ) {
+        DefaultTableModel d = new DefaultTableModel() {
+            // make first cell uneditable
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return !(column == 1 || column == 5 || column == 6 || column == 7 || column == 8);
             }
         };
+        d.setDataVector(
+                tablaGraduados,
+                new Object[]{"Nombre Graduado", "Foto", "Cargo Actual", "Descripcion", "Pais", "Aptitudes", "Educacion", "Experiencia", "Logros"}
+        );
+        
         tabla.setModel(d);
+        tabla.getColumn("Nombre Graduado").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("Nombre Graduado").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("Cargo Actual").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("Cargo Actual").setCellEditor(new TextAreaEditor());
         tabla.getColumn("Descripcion").setCellRenderer(new TextAreaRenderer());
         tabla.getColumn("Descripcion").setCellEditor(new TextAreaEditor());
+        tabla.getColumn("Pais").setCellRenderer(new TextAreaRenderer());
+        tabla.getColumn("Pais").setCellEditor(new TextAreaEditor());
         tabla.setRowHeight(158);
     }
 }
