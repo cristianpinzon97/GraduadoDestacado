@@ -143,7 +143,7 @@ public class Extractor implements Runnable {
 
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("start-maximized");
-        options.addArguments("--headless");
+        //options.addArguments("--headless");
         options.addArguments("--window-size=1920x1080");
         options.addArguments("--disable-extensions");
         options.addArguments("--disable-infobars");
@@ -154,6 +154,7 @@ public class Extractor implements Runnable {
             System.out.println("**>uh-oh " + e.getMessage());
         }
         webDriver.manage().deleteAllCookies();
+        webDriver.manage().window().setPosition(new Point(0, -3000));
         webDriver.get(LinkedInUri);
         try {
             WebElement email = (new WebDriverWait(webDriver, 5)).until(
